@@ -48,10 +48,8 @@ if __name__ == '__main__':
     img = Image.open(img_path)
 
     results = []
-    tf = []
-    tf.append(transforms.Resize(256))
-    tf.append(transforms.ToTensor())
-    tf.append(transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)))
+    tf = [transforms.Resize(256), transforms.ToTensor(),
+          transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5))]
     transform = transforms.Compose(tf)
 
     img_tf = transform(img)
