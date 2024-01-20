@@ -1,10 +1,9 @@
+import os
+
+import torch
+from PIL import Image
 from torch.utils import data
 from torchvision import transforms as T
-from torchvision.datasets import ImageFolder
-from PIL import Image
-import torch
-import os
-import random
 
 
 class CelebA(data.Dataset):

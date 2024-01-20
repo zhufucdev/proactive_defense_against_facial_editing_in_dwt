@@ -1,26 +1,21 @@
-from tqdm import tqdm
-from torch.optim import SGD, Adam
-import time
 import datetime
+import time
 from argparse import ArgumentParser
 
-from networks.PG_network import define_G as PG_Model
-from config import no_dropout, init_type, init_gain, ngf, net_noise, norm, device, input_nc, output_nc, max_psnr, STYLE_WEIGHT, CONTENT_WEIGHT
-
-from data_loader import get_loader
-
-from networks.Generalize_Model import Models
-from networks.SA_model import SA
-from networks.DWT_model import DWT
-from networks.vgg import Vgg16
-
-from logger import setup_logger
-from tools.color_space import rgb2ycbcr_np, ycbcr_to_tensor, ycbcr_to_rgb
-from tools.metrics_compute import compute_metrics, compute_psnr, prepare_lpips, get_perceptual_loss
-from tools.tool import *
 from torchvision import transforms
+from tqdm import tqdm
 
-
+from config import no_dropout, init_type, init_gain, ngf, net_noise, norm, input_nc, output_nc, STYLE_WEIGHT, \
+    CONTENT_WEIGHT
+from data_loader import get_loader
+from networks.DWT_model import DWT
+from networks.Generalize_Model import Models
+from networks.PG_network import define_G as PG_Model
+from networks.SA_model import SA
+from networks.vgg import Vgg16
+from tools.color_space import rgb2ycbcr_np, ycbcr_to_tensor, ycbcr_to_rgb
+from tools.metrics_compute import compute_metrics, prepare_lpips, get_perceptual_loss
+from tools.tool import *
 
 if __name__ == '__main__':
 
