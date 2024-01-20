@@ -6,14 +6,16 @@ from torchvision import transforms
 import cv2
 import numpy as np
 
+
 class SA(nn.Module):
-    def __init__(self, opts):
+    def __init__(self, mask_model_path):
         super(SA, self).__init__()
-        self.path = opts.mask_model_path
+        self.path = mask_model_path
         self.SA = SODModel().to(config.device)
         self.load_weights()
         self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                         std=[0.229, 0.224, 0.225])
+                                              std=[0.229, 0.224, 0.225])
+
     def load_weights(self):
         chkpt = torch.load(self.path, map_location=config.device)
         self.SA.load_state_dict(chkpt['model'])
@@ -64,4 +66,3 @@ class SA(nn.Module):
         pred_masks = torch.nn.functional.interpolate(pred_masks, size=(128, 128), mode='bilinear',
                                                      align_corners=False)
         return pred_masks
-

@@ -7,13 +7,13 @@ import cv2
 import numpy as np
 
 class DWT(nn.Module):
-    def __init__(self, opts):
+    def __init__(self, img_size):
         super(DWT, self).__init__()
         self.dwt = common.DWT().to(config.device)
         self.iwt = common.IWT().to(config.device)
         self.dwt.eval()
         self.iwt.eval()
-        self.img_size = opts.img_size
+        self.img_size = img_size
 
     def get_subbands(self, x_dwt):
         x_LL = x_dwt.narrow(1, 0, 3)  # [1,3,128,128]---LL

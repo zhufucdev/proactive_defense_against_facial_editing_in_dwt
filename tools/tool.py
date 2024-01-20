@@ -20,8 +20,8 @@ def path_isexists(opts):
         os.makedirs(opts.weight_save_path)
 
 
-def Y_mask(opts):
-    mask = np.ones((1, 3, opts.img_size, opts.img_size))
+def Y_mask(img_size):
+    mask = np.ones((1, 3, img_size, img_size))
     mask[:, 0, :, :] = 0
     mask = torch.Tensor(mask).to(device)
     mask.requires_grad = False

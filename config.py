@@ -36,3 +36,7 @@ max_psnr = 50.0  # PG weight save condition
 # metrics
 STYLE_WEIGHT = 1e5
 CONTENT_WEIGHT = 1e0
+
+eposilon = 0.01
+mask_model_path = './checkpoints/mask.pth'
+img_size = 256

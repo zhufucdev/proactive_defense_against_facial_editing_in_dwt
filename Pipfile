@@ -9,6 +9,7 @@ torchvision = "*"
 pillow = "*"
 tqdm = "*"
 opencv-python = "*"
+flask = "*"
 
 [dev-packages]
 
