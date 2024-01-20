@@ -1,5 +1,6 @@
 """ Basic configuration and settings for training the model"""
 import torch
+
 # specify protection model architecture [resnet_9blocks, resnet_6blocks, resnet_2blocks, resnet_1blocks, unet_32, unet_64, unet_128, unet_256]
 net_noise = 'unet_64'
 
@@ -21,8 +22,7 @@ input_nc = 3
 output_nc = 3
 
 # running device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
 # SM
 conv_dim = 64

@@ -25,8 +25,8 @@ if __name__ == '__main__':
                                default="./checkpoints/FAN/best-model_epoch-204_mae-0.0505_loss-0.1370.pth", type=str,
                                help='Saliency Detection Model Weight Path')
     config_parser.add_argument('--PG_path', default="./checkpoints/PG.pth", type=str, help='PG Weight Path')
-    config_parser.add_argument('--test_path',default='./test/test_dataset', type=str, help='Test Result Path')
-    config_parser.add_argument('--test_img',default='test.jpg', type=str, help='Test Image Name')
+    config_parser.add_argument('--test_path', default='./test/test_dataset', type=str, help='Test Result Path')
+    config_parser.add_argument('--test_img', default='test.jpg', type=str, help='Test Image Name')
     config_parser.add_argument('--batch_size', default=1, type=int, help='Batch Size')
     config_parser.add_argument('--eposilon', default=0.01, type=float, help='Perturbation Scale')
     config_parser.add_argument('--img_size', default=256, type=float, help='Image Size')
@@ -34,7 +34,8 @@ if __name__ == '__main__':
                                help='Dataset Path')
     config_parser.add_argument('--attribute_txt_path', default='/home/as/hh/data/CelebAMask-HQ-attribute-anno.txt',
                                type=str, help='Attribute Txt Path')
-    config_parser.add_argument('--selected_attrs', default=["Black_Hair", "Blond_Hair", "Brown_Hair", "Male", "Young"], type=list, help='Attribute Selection')
+    config_parser.add_argument('--selected_attrs', default=["Black_Hair", "Blond_Hair", "Brown_Hair", "Male", "Young"],
+                               type=list, help='Attribute Selection')
     opts = config_parser.parse_args()
 
     print(opts)
@@ -59,7 +60,8 @@ if __name__ == '__main__':
     PG.to(device)
     PG.eval()
 
-    test_dataloader = get_loader(opts.dataset_path, opts.attribute_txt_path, opts.selected_attrs, batch_size=opts.batch_size, mode='test')
+    test_dataloader = get_loader(opts.dataset_path, opts.attribute_txt_path, opts.selected_attrs,
+                                 batch_size=opts.batch_size, mode='test')
 
     psnr_value, ssim_value, lpips_alexs, lpips_vggs = 0.0, 0.0, 0.0, 0.0
     succ_num, total_num = 0.0, 0.0
@@ -108,11 +110,12 @@ if __name__ == '__main__':
             lpips_alexs_adv += lpips_alex
             lpips_vggs_adv += lpips_vgg
 
-            for i in range(len(adv_outs)-1):
-                psnr_temp, ssim_temp, lpips_alex, lpips_vgg = compute_metrics(ori_outs[i+1], adv_outs[i+1], lpips_model, lpips_model2)
-                l1_error += torch.nn.functional.l1_loss(ori_outs[i+1], adv_outs[i+1]).item()
-                l2_error += torch.nn.functional.mse_loss(ori_outs[i+1], adv_outs[i+1]).item()
-                loss_style, loss_content = get_perceptual_loss(vgg, ori_outs[i+1], adv_outs[i+1])
+            for i in range(len(adv_outs) - 1):
+                psnr_temp, ssim_temp, lpips_alex, lpips_vgg = compute_metrics(ori_outs[i + 1], adv_outs[i + 1],
+                                                                              lpips_model, lpips_model2)
+                l1_error += torch.nn.functional.l1_loss(ori_outs[i + 1], adv_outs[i + 1]).item()
+                l2_error += torch.nn.functional.mse_loss(ori_outs[i + 1], adv_outs[i + 1]).item()
+                loss_style, loss_content = get_perceptual_loss(vgg, ori_outs[i + 1], adv_outs[i + 1])
                 vgg_per = (STYLE_WEIGHT * loss_style + CONTENT_WEIGHT * loss_content).item()
                 vgg_sum += vgg_per
                 psnr_value += psnr_temp
@@ -121,7 +124,7 @@ if __name__ == '__main__':
                 lpips_vggs += lpips_vgg
 
                 # ASR
-                dis = criterion(ori_outs[i+1], adv_outs[i+1])
+                dis = criterion(ori_outs[i + 1], adv_outs[i + 1])
                 # dis = ((ori_outs[i] * pred_round - adv_outs[i] * pred_round) ** 2).sum() / (pred_round.sum() * 3)
                 if dis >= 0.05:
                     succ_num = succ_num + 1
@@ -160,5 +163,3 @@ if __name__ == '__main__':
     et = time.time() - start_time
     et = str(datetime.timedelta(seconds=et))[:-7]
     print("time use:" + str(et))
-
-

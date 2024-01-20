@@ -65,7 +65,6 @@ class CelebA(data.Dataset):
             else:
                 break
 
-
         print('Finished preprocessing the CelebA dataset...')
 
     def __getitem__(self, index):
@@ -101,6 +100,6 @@ def get_loader(image_dir, attr_path, selected_attrs, image_size=256,
 
     data_loader = data.DataLoader(dataset=dataset,
                                   batch_size=batch_size,
-                                  shuffle=(mode=='train'),
+                                  shuffle=(mode == 'train'),
                                   num_workers=num_workers)
     return data_loader

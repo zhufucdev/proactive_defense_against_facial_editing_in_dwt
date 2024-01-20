@@ -19,8 +19,6 @@ from tools.metrics_compute import compute_metrics, compute_psnr, prepare_lpips
 from tools.tool import *
 from torchvision import transforms
 
-
-
 if __name__ == '__main__':
 
     config_parser = ArgumentParser()
@@ -33,17 +31,26 @@ if __name__ == '__main__':
     config_parser.add_argument('--img_size', default=256, type=float, help='Image Size')
     config_parser.add_argument('--show_iter', default=1, type=int, help='Show Results After Every Iters')
 
-    config_parser.add_argument('--dataset_path', default='/home/as/hh/data/CelebA-HQ-img/', type=str, help='Dataset Path')
-    config_parser.add_argument('--attribute_txt_path', default='/home/as/hh/data/CelebAMask-HQ-attribute-anno.txt', type=str, help='Attribute Txt Path')
-    config_parser.add_argument('--selected_attrs', default=["Black_Hair", "Blond_Hair", "Brown_Hair", "Male", "Young"], type=list, help='Attribute Selection')
+    config_parser.add_argument('--dataset_path', default='/home/as/hh/data/CelebA-HQ-img/', type=str,
+                               help='Dataset Path')
+    config_parser.add_argument('--attribute_txt_path', default='/home/as/hh/data/CelebAMask-HQ-attribute-anno.txt',
+                               type=str, help='Attribute Txt Path')
+    config_parser.add_argument('--selected_attrs', default=["Black_Hair", "Blond_Hair", "Brown_Hair", "Male", "Young"],
+                               type=list, help='Attribute Selection')
 
     config_parser.add_argument('--SM_path', default="./checkpoints/200000-G.ckpt", type=str, help='SM Weight Path')
-    config_parser.add_argument('--mask_model_path', default="./checkpoints/FAN/best-model_epoch-204_mae-0.0505_loss-0.1370.pth", type=str, help='Saliency Detection Model Weight Path')
+    config_parser.add_argument('--mask_model_path',
+                               default="./checkpoints/FAN/best-model_epoch-204_mae-0.0505_loss-0.1370.pth", type=str,
+                               help='Saliency Detection Model Weight Path')
 
-    config_parser.add_argument('--train_save_path',default='/data1/hh/Proactive_results/train', type=str, help='Train Result Path')
-    config_parser.add_argument('--val_save_path',default='/data1/hh/Proactive_results/val', type=str, help='Val Result Path')
-    config_parser.add_argument('--weight_save_path',default='/data1/hh/Proactive_results/weight', type=str, help='PG Weights Save Path')
-    config_parser.add_argument('--logger_save_path',default='/data1/hh/Proactive_results/', type=str, help='Logger Save Path')
+    config_parser.add_argument('--train_save_path', default='/data1/hh/Proactive_results/train', type=str,
+                               help='Train Result Path')
+    config_parser.add_argument('--val_save_path', default='/data1/hh/Proactive_results/val', type=str,
+                               help='Val Result Path')
+    config_parser.add_argument('--weight_save_path', default='/data1/hh/Proactive_results/weight', type=str,
+                               help='PG Weights Save Path')
+    config_parser.add_argument('--logger_save_path', default='/data1/hh/Proactive_results/', type=str,
+                               help='Logger Save Path')
     opts = config_parser.parse_args()
 
     print(opts)
@@ -61,13 +68,15 @@ if __name__ == '__main__':
     logger.info(f'======Proactive Defense Against Facial Editing in DWT=======')
     logger.info(f'Loading model.')
 
-    train_dataloader = get_loader(opts.dataset_path, opts.attribute_txt_path, opts.selected_attrs, batch_size=batch_size, mode='train')
-    val_dataloader = get_loader(opts.dataset_path, opts.attribute_txt_path, opts.selected_attrs, batch_size=batch_size, mode='val')
+    train_dataloader = get_loader(opts.dataset_path, opts.attribute_txt_path, opts.selected_attrs,
+                                  batch_size=batch_size, mode='train')
+    val_dataloader = get_loader(opts.dataset_path, opts.attribute_txt_path, opts.selected_attrs, batch_size=batch_size,
+                                mode='val')
 
     # net prepare
     lpips_model, lpips_model2 = prepare_lpips()
-    SM_net = SM(opts) # suggorate model
-    SA_net = SA(opts) # saliency detection model
+    SM_net = SM(opts)  # suggorate model
+    SA_net = SA(opts)  # saliency detection model
     DWT_net = DWT(opts)  # dwt
 
     # get the number of images in the dataset.
@@ -88,12 +97,11 @@ if __name__ == '__main__':
 
     best_loss = float("inf")
 
-
-
     for epoch in range(1, opts.iter_num):
         train_imgs = []
         val_imgs = []
-        train_current_loss = {'D/loss_real': 0., 'D/loss_fake': 0., 'D/loss_gp': 0.,'G/loss_fake': 0., 'G/loss_attack': 0.}
+        train_current_loss = {'D/loss_real': 0., 'D/loss_fake': 0., 'D/loss_gp': 0., 'G/loss_fake': 0.,
+                              'G/loss_attack': 0.}
 
         psnr_value, ssim_value, lpips_alexs, lpips_vggs = 0.0, 0.0, 0.0, 0.0
         psnr_sm = 0.0
@@ -110,7 +118,7 @@ if __name__ == '__main__':
             # DWT transform
             x_dwt = DWT_net.dwt(x_y)
             x_LL, x_HL, x_LH, x_HH = DWT_net.get_subbands(x_dwt)
-            reshape_img = DWT_net.dwt_to_whole(x_LL, x_HL, x_LH, x_HH) #[1,3,256,256]
+            reshape_img = DWT_net.dwt_to_whole(x_LL, x_HL, x_LH, x_HH)  # [1,3,256,256]
 
             if epoch % show_iter == 0 and idx < 10:
                 ori_outs = SM_net.SM_out(x_real, c_trg_list)
@@ -118,7 +126,6 @@ if __name__ == '__main__':
             adv_noise = PG(reshape_img) * y_mask
             adv_noise = torch.clamp(adv_noise, -eposilon, eposilon)
             adv_noise = noise_clamp(adv_noise, img_size, sa_mask)
-
 
             x_L_adv = reshape_img + adv_noise
             x_adv_dwt = DWT_net.whole_to_dwt(x_L_adv)
@@ -172,7 +179,6 @@ if __name__ == '__main__':
             g_loss.backward()
             model_optim.step()
 
-
             if idx < 10 and epoch % show_iter == 0:
                 adv_outs = SM_net.SM_out(adv_A, c_trg_list)
 
@@ -187,9 +193,7 @@ if __name__ == '__main__':
             lpips_vggs += lpips_vgg
 
             for i in range(len(opts.selected_attrs)):
-                psnr_sm += compute_psnr(ori_outs[i+1], adv_outs[i+1])
-
-
+                psnr_sm += compute_psnr(ori_outs[i + 1], adv_outs[i + 1])
 
             if epoch % show_iter == 0 and idx < 10:
                 train_imgs.append(torch.cat(ori_outs, dim=0))
@@ -197,7 +201,6 @@ if __name__ == '__main__':
 
         if train_imgs:
             save_grid_img(train_imgs, opts.train_save_path, epoch)
-
 
         psnr_value /= len(train_dataloader)
         ssim_value /= len(train_dataloader)
@@ -211,7 +214,6 @@ if __name__ == '__main__':
         train_current_loss['D/loss_gp'] /= len(train_dataloader)
         train_current_loss['G/loss_fake'] /= len(train_dataloader)
         train_current_loss['G/loss_attack'] /= len(train_dataloader)
-
 
         val_current_loss = {'G/loss_attack': 0.}
         val_psnr_value, val_ssim_value, val_lpips_alexs, val_lpips_vggs = 0.0, 0.0, 0.0, 0.0
@@ -283,9 +285,9 @@ if __name__ == '__main__':
         print(log_message)
         if logger:
             logger.debug(f'Step: {epoch:05d}, '
-                          f'lr: {lr:.2e}, '
+                         f'lr: {lr:.2e}, '
                          f'e: {eposilon:.2e},'
-                          f'{log_message}')
+                         f'{log_message}')
 
         if psnr_sm < max_psnr:
             max_psnr = psnr_sm
@@ -297,8 +299,8 @@ if __name__ == '__main__':
 
         print(
             'Epoch {} / {} \t Train Loss: {:.3f} \t Val Loss: {:.3f}'.format(epoch, opts.iter_num,
-                                                                            train_current_loss['G/loss_attack'],
-                                                                            val_current_loss['G/loss_attack']))
+                                                                             train_current_loss['G/loss_attack'],
+                                                                             val_current_loss['G/loss_attack']))
         save_filename_model = 'perturb_latest.pth'
         save_path = os.path.join(opts.weight_save_path, save_filename_model)
         torch.save({"protection_net": PG.state_dict()}, save_path)

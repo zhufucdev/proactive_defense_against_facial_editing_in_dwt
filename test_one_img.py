@@ -1,9 +1,7 @@
-
 from argparse import ArgumentParser
 
 from networks.PG_network import define_G as PG_Model
 from config import no_dropout, init_type, init_gain, ngf, net_noise, norm, device, input_nc, output_nc, max_psnr
-
 
 # fgan
 from networks.SM_model import SM
@@ -16,18 +14,18 @@ from torchvision import transforms
 from PIL import Image
 
 if __name__ == '__main__':
-
     config_parser = ArgumentParser()
     config_parser.add_argument('--SM_path', default="./checkpoints/200000-G.ckpt", type=str, help='SM Weight Path')
     config_parser.add_argument('--mask_model_path',
                                default="./checkpoints/FAN/best-model_epoch-204_mae-0.0505_loss-0.1370.pth", type=str,
                                help='Saliency Detection Model Weight Path')
     config_parser.add_argument('--PG_path', default="./checkpoints/PG.pth", type=str, help='PG Weight Path')
-    config_parser.add_argument('--test_path',default='./test', type=str, help='Test Result Path')
-    config_parser.add_argument('--test_img',default='test.jpg', type=str, help='Test Image Name')
+    config_parser.add_argument('--test_path', default='./test', type=str, help='Test Result Path')
+    config_parser.add_argument('--test_img', default='test.jpg', type=str, help='Test Image Name')
     config_parser.add_argument('--eposilon', default=0.01, type=float, help='Perturbation Scale')
     config_parser.add_argument('--img_size', default=256, type=float, help='Image Size')
-    config_parser.add_argument('--selected_attrs', default=["Black_Hair", "Blond_Hair", "Brown_Hair", "Male", "Young"], type=list, help='Attribute Selection')
+    config_parser.add_argument('--selected_attrs', default=["Black_Hair", "Blond_Hair", "Brown_Hair", "Male", "Young"],
+                               type=list, help='Attribute Selection')
     opts = config_parser.parse_args()
 
     print(opts)
@@ -41,11 +39,10 @@ if __name__ == '__main__':
     DWT_net = DWT(opts)  # dwt
     # PG load
     PG = PG_Model(input_nc, output_nc, ngf, net_noise, norm, not no_dropout, init_type, init_gain).to(device)
-    checkpoint = torch.load(opts.PG_path)
+    checkpoint = torch.load(opts.PG_path, map_location=device)
     PG.load_state_dict(checkpoint['protection_net'])
     PG.to(device)
     PG.eval()
-
 
     img_path = os.path.join(opts.test_path, opts.test_img)
     img = Image.open(img_path)
@@ -71,7 +68,7 @@ if __name__ == '__main__':
     sa_mask = SA_net.compute_mask(x_real)
     # convert RGB to YCbCr
     x_ycbcr = rgb2ycbcr_np(x_ori)
-    x_y = ycbcr_to_tensor(x_ycbcr).cuda()
+    x_y = ycbcr_to_tensor(x_ycbcr).to(device)
     x_dwt = DWT_net.dwt(x_y)
     x_LL, x_HL, x_LH, x_HH = DWT_net.get_subbands(x_dwt)
     reshape_img = DWT_net.dwt_to_whole(x_LL, x_HL, x_LH, x_HH)
@@ -92,12 +89,3 @@ if __name__ == '__main__':
     save_grid_img(results, opts.test_path, 0)
 
     print("=====Saved successful in 'test/result.png'======")
-
-
-
-
-
-
-
-
-
