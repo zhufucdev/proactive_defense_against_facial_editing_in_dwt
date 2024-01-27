@@ -63,17 +63,17 @@ def defend():
         abort(400)
 
     file = request.files['file']
+    accept = request.headers.get('Accept', default=None)
+    codec = 'jpeg'
+    if accept is not None:
+        paths = accept.split('/')
+        if len(paths) != 2:
+            abort(400)
+
+        if paths[0] != '*' and paths[1] != '*':
+            codec = paths[1]
+
     with file.stream as s:
-        accept = request.headers.get('Accept', default=None)
-        codec = 'jpeg'
-        if accept is not None:
-            paths = accept.split('/')
-            if len(paths) != 2 or paths[0] != 'image':
-                abort(400)
-
-            if paths[1] != '*':
-                codec = paths[1]
-
         image = generate_defended_image(s)
         buf = io.BytesIO()
         image.save(buf, format=codec)
