@@ -39,4 +39,5 @@ CONTENT_WEIGHT = 1e0
 
 eposilon = 0.01
 mask_model_path = './checkpoints/mask.pth'
+pg_path = './checkpoints/PG.pth'
 img_size = 256
