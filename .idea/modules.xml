@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/proactive_defense_against_facial_editing_in_dwt.iml" filepath="$PROJECT_DIR$/.idea/proactive_defense_against_facial_editing_in_dwt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/tafim_defense_app.iml" filepath="$PROJECT_DIR$/.idea/tafim_defense_app.iml" />
     </modules>
   </component>
 </project>

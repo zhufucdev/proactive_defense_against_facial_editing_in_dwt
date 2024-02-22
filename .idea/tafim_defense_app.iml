@@ -3,7 +3,7 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Pipenv (proactive_defense_against_facial_editing_in_dwt)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Pipenv (tafim_defense_app)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

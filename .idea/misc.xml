@@ -3,7 +3,7 @@
   <component name="Black">
     <option name="sdkName" value="Pipenv (proactive_defense_against_facial_editing_in_dwt)" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="Pipenv (proactive_defense_against_facial_editing_in_dwt)" project-jdk-type="Python SDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="Pipenv (tafim_defense_app)" project-jdk-type="Python SDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>
