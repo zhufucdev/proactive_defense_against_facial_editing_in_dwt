@@ -1,11 +1,9 @@
 import io
 from typing import IO
 
-import torch
 from PIL import Image
 from flask import Flask, request, abort, send_file
 from torchvision import transforms
-from torchvision.utils import make_grid
 
 from config import no_dropout, init_type, init_gain, ngf, net_noise, norm, input_nc, output_nc, eposilon, \
     mask_model_path, img_size, pg_path
@@ -28,7 +26,7 @@ pg_model.to(device)
 pg_model.eval()
 
 
-def generate_defended_image(imio: IO[bytes], image_format: str | None = None):
+def generate_defended_image(imio: IO[bytes], image_format: str = 'png'):
     img = Image.open(imio)
 
     transform = transforms.Compose(
